@@ -69,7 +69,7 @@ def footer():
         " with ❤️ by ",
         link("https://www.linkedin.com/in/shashank-deshpande/", "Shashank Deshpande"),
         br(),
-        "Note: This video is only for educational purposes."
+        "Note: This video is only for educational purposes.",
         br(),
         "Please refer ",
         link("https://www.cowin.gov.in/home", "CoWIN"),
