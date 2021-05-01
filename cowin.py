@@ -4,6 +4,7 @@ import traceback
 import pandas as pd
 import streamlit as st
 from datetime import datetime, timedelta
+from helper import footer
 
 class CoWIN:
 
@@ -13,7 +14,7 @@ class CoWIN:
             initial_sidebar_state="expanded"
             )
 
-    @st.cache
+    #@st.cache(show_spinner=False)
     def call_calender_api(self, pincode, date):
         url = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin"
         data = []
@@ -29,7 +30,7 @@ class CoWIN:
             traceback.print_exc()
         return data
 
-    @st.cache
+    #@st.cache(show_spinner=False)
     def call_daily_api(self, pincode, date):
         url = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/findByPin"
         data = {}
@@ -69,7 +70,7 @@ class CoWIN:
             for session in center['sessions']:
                 date = self.str_to_date(session["date"])
                 date = datetime.strftime(date, "%d %b")
-                dose_count = session['available_capacity']
+                dose_count = int(session['available_capacity'])
                 if session["min_age_limit"] == age:
                     data_dict.setdefault(center_name, {})
                     session_info = daily_info.get(session["session_id"])
@@ -105,6 +106,7 @@ class CoWIN:
         else:
             st.error("Invalid Pincode")
             st.stop()
+        footer()
 
 if __name__ == "__main__":
     CoWIN().main()
