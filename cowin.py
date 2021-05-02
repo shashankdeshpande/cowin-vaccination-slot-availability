@@ -15,7 +15,7 @@ class CoWIN:
             initial_sidebar_state="expanded"
             )
 
-    @st.cache(show_spinner=False)
+    #@st.cache(show_spinner=False)
     def call_calender_api(self, pincode, date):
         url = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin"
         data = []
@@ -31,7 +31,7 @@ class CoWIN:
             traceback.print_exc()
         return data
 
-    @st.cache(show_spinner=False)
+    #@st.cache(show_spinner=False)
     def call_daily_api(self, pincode, date):
         url = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/findByPin"
         data = {}
@@ -44,7 +44,7 @@ class CoWIN:
                     "date": self.date_to_str(start_date)
                     }
                 resp = requests.get(url, params=params, timeout=5)
-                print(resp.reason, resp.status_code, resp.request.headers)
+                print(resp.reason, resp.status_code, resp.text, resp.content, resp.request.headers)
                 resp = resp.json()
                 resp = {i["session_id"]:i for i in resp["sessions"]}
                 data.update(resp)
