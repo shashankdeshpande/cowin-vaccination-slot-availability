@@ -1,10 +1,11 @@
+import time
 import json
 import requests
 import traceback
 import pandas as pd
 import streamlit as st
 from datetime import datetime, timedelta
-from helper import footer
+#from helper import footer
 
 class CoWIN:
 
@@ -14,7 +15,7 @@ class CoWIN:
             initial_sidebar_state="expanded"
             )
 
-    #@st.cache(show_spinner=False)
+    @st.cache(show_spinner=False)
     def call_calender_api(self, pincode, date):
         url = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin"
         data = []
@@ -30,7 +31,7 @@ class CoWIN:
             traceback.print_exc()
         return data
 
-    #@st.cache(show_spinner=False)
+    @st.cache(show_spinner=False)
     def call_daily_api(self, pincode, date):
         url = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/findByPin"
         data = {}
@@ -43,13 +44,14 @@ class CoWIN:
                     "date": self.date_to_str(start_date)
                     }
                 resp = requests.get(url, params=params, timeout=5)
+                print(resp.reason, resp.status_code)
                 resp = resp.json()
                 resp = {i["session_id"]:i for i in resp["sessions"]}
                 data.update(resp)
                 start_date += timedelta(days=1)
+                time.sleep(1)
         except Exception as e:
             traceback.print_exc()
-            
         return data
 
     def str_to_date(self, date):
@@ -70,14 +72,14 @@ class CoWIN:
             for session in center['sessions']:
                 date = self.str_to_date(session["date"])
                 date = datetime.strftime(date, "%d %b")
-                dose_count = int(session['available_capacity'])
+                dose_count = session['available_capacity']
                 if session["min_age_limit"] == age:
                     data_dict.setdefault(center_name, {})
                     session_info = daily_info.get(session["session_id"])
                     if session_info and session_info["vaccine"] and dose_count:
                         dose_count = f"{session_info['vaccine']} - {dose_count}"
-                    if not dose_count:
-                        dose_count = None
+
+                    dose_count = str(dose_count) if dose_count else None
                     data_dict[center_name][date] = dose_count
         return data_dict
 
@@ -106,7 +108,7 @@ class CoWIN:
         else:
             st.error("Invalid Pincode")
             st.stop()
-        footer()
+        #footer()
 
 if __name__ == "__main__":
     CoWIN().main()
