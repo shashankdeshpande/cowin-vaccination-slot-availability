@@ -44,7 +44,7 @@ class CoWIN:
                     "date": self.date_to_str(start_date)
                     }
                 resp = requests.get(url, params=params, timeout=5)
-                print(resp.reason, resp.status_code)
+                print(resp.reason, resp.status_code, resp.request.headers)
                 resp = resp.json()
                 resp = {i["session_id"]:i for i in resp["sessions"]}
                 data.update(resp)
