@@ -131,7 +131,7 @@ class CoWIN:
         else:
             st.info("Planned vaccination sessions")
             st.dataframe(df)
-        #footer()
+        footer()
 
 if __name__ == "__main__":
     CoWIN().main()
