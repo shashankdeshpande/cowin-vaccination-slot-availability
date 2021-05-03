@@ -6,7 +6,7 @@ import traceback
 import pandas as pd
 import streamlit as st
 from datetime import datetime, timedelta
-#from helper import footer
+from helper import footer
 
 class CoWIN:
 
