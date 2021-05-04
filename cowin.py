@@ -1,3 +1,4 @@
+import os
 import time
 import json
 import itertools
@@ -5,6 +6,7 @@ import requests
 import traceback
 import pandas as pd
 import streamlit as st
+from requests_aws4auth import AWS4Auth
 from datetime import datetime, timedelta
 from helper import footer
 
@@ -18,18 +20,22 @@ class CoWIN:
             )
         self.api_error_msg = "API Error!! Please try after some time."
         self.available_vaccines = ["COVISHIELD","COVAXIN"]
+        access_id = os.environ['AWS_ACCESS_ID']
+        secret_token = os.environ['AWS_SECRET_TOKEN']
+        self.aws_auth = AWS4Auth(access_id, secret_token, 'ap-south-1', 'execute-api')
+        self.aws_api_url = "https://o9g9ndk5ra.execute-api.ap-south-1.amazonaws.com"
 
     @st.cache(show_spinner=False, suppress_st_warning=True)
     def call_calender_api(self, pincode, date):
         # url = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/calendarByPin"
-        url = "https://k9tcutisfc.execute-api.ap-south-1.amazonaws.com/calendarByPin"
+        url = f"{self.aws_api_url}/calendarByPin"
         data = []
         try:
             params = {
                 "pincode": pincode,
                 "date": date
                 }
-            resp = requests.get(url, params=params, timeout=5)
+            resp = requests.get(url, params=params, auth=self.aws_auth, timeout=5)
             resp = resp.json()
             data = resp['centers']
         except Exception as e:
@@ -41,7 +47,7 @@ class CoWIN:
     @st.cache(show_spinner=False, suppress_st_warning=True)
     def call_daily_api(self, pincode, date):
         # url = "https://cdn-api.co-vin.in/api/v2/appointment/sessions/public/findByPin"
-        url = "https://k9tcutisfc.execute-api.ap-south-1.amazonaws.com/findByPin"
+        url = f"{self.aws_api_url}/findByPin"
         data = {}
         try:
             start_date = self.str_to_date(date)
@@ -51,7 +57,7 @@ class CoWIN:
                     "pincode": pincode,
                     "date": self.date_to_str(start_date)
                     }
-                resp = requests.get(url, params=params, timeout=5)
+                resp = requests.get(url, params=params, auth=self.aws_auth, timeout=5)
                 resp = resp.json()
                 resp = {i["session_id"]:i for i in resp["sessions"]}
                 data.update(resp)
