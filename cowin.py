@@ -85,7 +85,6 @@ class CoWIN:
             #         center_name += "\n" + "\n".join(vaccine_fees)
             for session in center['sessions']:
                 date = self.str_to_date(session["date"])
-                date = datetime.strftime(date, "%d %b")
                 dose_count = session['available_capacity']
 
                 session_info = daily_info.get(session["session_id"])
@@ -128,6 +127,8 @@ class CoWIN:
             daily_info = self.call_daily_api(pincode, date)
             data = self.preprocess_data(calender_info, daily_info, age, vaccine)
             df = pd.DataFrame(data)
+            df = df.sort_index()
+            df.index = df.index.map(lambda x:datetime.strftime(x, "%d %b"))
             df = df.fillna("-")
             df = df.T
             df = df.sort_index()
