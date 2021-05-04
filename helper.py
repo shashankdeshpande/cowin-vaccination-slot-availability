@@ -69,8 +69,6 @@ def footer():
         " with ❤️ by ",
         link("https://www.linkedin.com/in/shashank-deshpande/", "Shashank Deshpande"),
         br(),
-        "This is only for educational purposes.",
-        br(),
         "Please refer ",
         link("https://www.cowin.gov.in/home", "CoWIN"),
         " website for details."
